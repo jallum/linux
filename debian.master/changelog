@@ -1,8 +1,6 @@
-linux (5.0.1-050001rc5.20190305122338) bionic; urgency=medium
+linux (5.0.1-laptops0.1.1) bionic; urgency=medium
 
-  AArch64 Laptops enablement, based on -next rc5
+  AArch64 Laptops enablement
 
-  Bump for testing - no real changes to the source
-
- -- Lee Jones <lee.jones@linaro.org>  Tue, 05 Mar 2019 12:23:38 +0000
+ -- Lee Jones <lee.jones@linaro.org>  Tue, 06 Mar 2019 09:29:02 +0000
 

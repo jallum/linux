@@ -165,6 +165,10 @@ endif
 			echo "$$dtb_file ?" >> $(DEBIAN)/d-i/firmware/$(arch)/kernel-image; \
 		done; \
 	fi
+	# Lee: Install the laptop DTBs into /boot
+	install -m644 $(pkgdir)/lib/firmware/$(abi_release)-$*/device-tree/qcom/laptop* \
+		$(pkgdir)/boot/
+
 ifeq ($(no_dumpfile),)
 	makedumpfile -g $(pkgdir)/boot/vmcoreinfo-$(abi_release)-$* \
 		-x $(builddir)/build-$*/vmlinux
