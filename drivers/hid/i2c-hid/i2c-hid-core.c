@@ -67,7 +67,7 @@ MODULE_PARM_DESC(debug, "print a lot of debug information");
 
 #define i2c_hid_dbg(ihid, fmt, arg...)					  \
 do {									  \
-	if (debug)							  \
+	if (1)							  \
 		dev_printk(KERN_DEBUG, &(ihid)->client->dev, fmt, ##arg); \
 } while (0)
 
@@ -436,7 +436,9 @@ static int i2c_hid_set_power(struct i2c_client *client, int power_state)
 		ihid->sleep_delay = jiffies + msecs_to_jiffies(20);
 
 	if (ret)
-		dev_err(&client->dev, "failed to change power setting.\n");
+		dev_err(&client->dev,
+			"failed to change power setting - addr: 0x%02x\n",
+			client->addr);
 
 set_pwr_exit:
 	return ret;
@@ -522,7 +524,7 @@ static void i2c_hid_get_input(struct i2c_hid *ihid)
 		return;
 	}
 
-	i2c_hid_dbg(ihid, "input: %*ph\n", ret_size, ihid->inbuf);
+//	i2c_hid_dbg(ihid, "input: %*ph\n", ret_size, ihid->inbuf);
 
 	if (test_bit(I2C_HID_STARTED, &ihid->flags))
 		hid_input_report(ihid->hid, HID_INPUT_REPORT, ihid->inbuf + 2,

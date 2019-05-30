@@ -607,7 +607,32 @@ static int msm_gpio_init_valid_mask(struct gpio_chip *chip)
 	int ret;
 	unsigned int len, i;
 	unsigned int max_gpios = pctrl->soc->ngpios;
+	const int *reserved = pctrl->soc->reserved_gpios;
 	u16 *tmp;
+//	long unsigned int fake_mask[] = { 0, 0, 0, 0, 0 };
+
+	for (i = 0; i < 5; i++)
+		printk("LEE: %s %s()[%d]: BEFORE: 0x%x\n",
+		       __FILE__, __func__, __LINE__, (unsigned int)chip->valid_mask[i]);
+	
+	/* Driver provided reserved list overrides DT and ACPI */
+	if (reserved) {
+		bitmap_fill(chip->valid_mask, max_gpios);
+		for (i = 0; i < max_gpios && reserved[i] >= 0; i++) {
+			if (i >= max_gpios || reserved[i] >= max_gpios) {
+				dev_err(pctrl->dev, "invalid list of reserved GPIOs\n");
+				return -EINVAL;
+			}
+			clear_bit(reserved[i], chip->valid_mask);
+//			set_bit(reserved[i], fake_mask);
+		}
+
+		for (i = 0; i < 5; i++)
+			printk("LEE: %s %s()[%d]: AFTER: 0x%x\n",
+			       __FILE__, __func__, __LINE__, (unsigned int)chip->valid_mask[i]);
+
+		return 0;
+	}
 
 	/* The number of GPIOs in the ACPI tables */
 	len = ret = device_property_read_u16_array(pctrl->dev, "gpios", NULL,
@@ -964,6 +989,9 @@ static void msm_gpio_irq_handler(struct irq_desc *desc)
 
 static bool msm_gpio_needs_valid_mask(struct msm_pinctrl *pctrl)
 {
+	if (pctrl->soc->reserved_gpios)
+		return true;
+
 	return device_property_read_u16_array(pctrl->dev, "gpios", NULL, 0) > 0;
 }
 
